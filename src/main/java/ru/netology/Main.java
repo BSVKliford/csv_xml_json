@@ -80,33 +80,27 @@ public class Main {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = documentBuilder.parse(s);
-            Node root = document.getDocumentElement();
-            NodeList nodes = root.getChildNodes();
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
+            document.getDocumentElement().normalize();//а нужно ли?
+            NodeList root = document.getElementsByTagName("employee");
+            for (int i = 0; i < root.getLength(); i++) {
                 long id = 0L;
                 String firstName = null;
                 String lastName = null;
                 String country = null;
                 int age = 0;
-                if (node.getNodeType() != Node.TEXT_NODE) {
-                    NodeList nodeProps = node.getChildNodes();
-                    for (int j = 0; j < nodeProps.getLength(); j++) {
-                        Node nodeProp = nodeProps.item(j);
-                        if (nodeProp.getNodeType() != Node.TEXT_NODE) {
-                            if (nodeProp.getNodeName().equals("id")) {
-                                id = Long.parseLong(nodeProp.getChildNodes().item(0).getTextContent());
-                            } else if (nodeProp.getNodeName().equals("firstName")) {
-                                firstName = nodeProp.getChildNodes().item(0).getTextContent();
-                            } else if (nodeProp.getNodeName().equals("lastName")) {
-                                lastName = nodeProp.getChildNodes().item(0).getTextContent();
-                            } else if (nodeProp.getNodeName().equals("country")) {
-                                country = nodeProp.getChildNodes().item(0).getTextContent();
-                            } else {
-                                age = Integer.parseInt(nodeProp.getChildNodes().item(0).getTextContent());
-                            }
-                        }
-                    }
+                Node node = root.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    NodeList elementNode = element.getElementsByTagName("id").item(0).getChildNodes();
+                    id = Long.parseLong((elementNode.item(0)).getNodeValue());
+                    elementNode = element.getElementsByTagName("firstName").item(0).getChildNodes();
+                    firstName = (elementNode.item(0)).getNodeValue();
+                    elementNode = element.getElementsByTagName("lastName").item(0).getChildNodes();
+                    lastName = (elementNode.item(0)).getNodeValue();
+                    elementNode = element.getElementsByTagName("country").item(0).getChildNodes();
+                    country = (elementNode.item(0)).getNodeValue();
+                    elementNode = element.getElementsByTagName("age").item(0).getChildNodes();
+                    age = Integer.parseInt((elementNode.item(0)).getNodeValue());
                     xmlReturn.add(new Employee(id, firstName, lastName, country, age));
                 }
             }
